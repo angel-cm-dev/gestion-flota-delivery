@@ -1,0 +1,50 @@
+name: gestion-flota-delivery
+
+services:
+  db:
+    image: postgres:16-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-flota}
+      POSTGRES_USER: ${POSTGRES_USER:-flota}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-flota_dev_password}
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-flota} -d ${POSTGRES_DB:-flota}"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+  backend:
+    build: ./backend
+    restart: unless-stopped
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      ENVIRONMENT: ${ENVIRONMENT:-production}
+      DATABASE_URL: postgresql+psycopg://${POSTGRES_USER:-flota}:${POSTGRES_PASSWORD:-flota_dev_password}@db:5432/${POSTGRES_DB:-flota}
+      JWT_SECRET: ${JWT_SECRET:-cambia-esta-clave-en-produccion-minimo-32-caracteres}
+      JWT_EXPIRE_MINUTES: ${JWT_EXPIRE_MINUTES:-120}
+      CORS_ORIGINS: ${CORS_ORIGINS:-http://localhost:8080}
+      DEPOT_LAT: ${DEPOT_LAT:--12.0464}
+      DEPOT_LNG: ${DEPOT_LNG:--77.0428}
+      SEED_DEMO_DATA: ${SEED_DEMO_DATA:-true}
+      LOG_JSON: "true"
+    volumes:
+      - uploads:/app/uploads
+    ports:
+      - "${API_PORT:-8000}:8000"
+
+  frontend:
+    build: ./frontend
+    restart: unless-stopped
+    depends_on:
+      - backend
+    ports:
+      - "${WEB_PORT:-8080}:8080"
+
+volumes:
+  pgdata:
+  uploads:

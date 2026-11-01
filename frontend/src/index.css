@@ -1,0 +1,19 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  color-scheme: light;
+}
+.dark {
+  color-scheme: dark;
+}
+
+/* Leaflet: en modo oscuro se atenúan los mosaicos de OpenStreetMap. */
+.dark .leaflet-tile-pane {
+  filter: brightness(0.75) contrast(1.1) saturate(0.8);
+}
+.leaflet-container {
+  font: inherit;
+  z-index: 0;
+}

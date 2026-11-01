@@ -1,0 +1,29 @@
+# Entornos y secretos
+.env
+.env.*
+!.env.example
+
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+.pytest_cache/
+.ruff_cache/
+.coverage
+htmlcov/
+*.db
+*.sqlite3
+backend/uploads/
+
+# Node
+node_modules/
+dist/
+coverage/
+*.tsbuildinfo
+
+# Editores / SO
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
